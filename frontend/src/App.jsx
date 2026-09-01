@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 
 import UploadPage from './pages/UploadPage';
+import AnalysisPage from './pages/AnalysisPage';
 
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState('en');
@@ -37,9 +38,9 @@ function App() {
                 />
               }
             />
+            <Route path="/analysis" element={<AnalysisPage />} />
             
             {/* Future Route Placeholders */}
-            <Route path="/analysis" element={<Navigate to="/" replace />} />
             <Route path="/chat" element={<Navigate to="/" replace />} />
             <Route path="/compare" element={<Navigate to="/" replace />} />
             <Route path="/profile" element={<Navigate to="/" replace />} />

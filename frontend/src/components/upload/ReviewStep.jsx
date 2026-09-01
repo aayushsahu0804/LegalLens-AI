@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SUPPORTED_LANGUAGES } from '../../constants/languages';
 import { PERSONA_OPTIONS } from '../../constants/upload';
 
@@ -16,10 +17,9 @@ export default function ReviewStep({
   customPersona,
   language,
   onGoToStep,
-  onResetWorkflow,
 }) {
+  const navigate = useNavigate();
   const [isSimulatingAnalysis, setIsSimulatingAnalysis] = useState(false);
-  const [showMilestoneModal, setShowMilestoneModal] = useState(false);
 
   // Lookups
   const personaObj = PERSONA_OPTIONS.find((p) => p.id === persona) || {
@@ -36,29 +36,24 @@ export default function ReviewStep({
 
   const handleAnalyzeClick = () => {
     setIsSimulatingAnalysis(true);
-    // Simulates instant client-side state packaging before opening the milestone notice
     setTimeout(() => {
       setIsSimulatingAnalysis(false);
-      setShowMilestoneModal(true);
-    }, 600);
-  };
-
-  const analysisPayloadSummary = {
-    document: {
-      name: file?.name || 'No document loaded',
-      sizeBytes: file?.size || 0,
-      sizeFormatted: formatFileSize(file?.size || 0),
-      format: 'PDF',
-    },
-    perspective: {
-      id: persona,
-      role: persona === 'other' && customPersona ? `${personaObj.title} (${customPersona})` : personaObj.title,
-    },
-    outputLanguage: {
-      code: language,
-      name: languageObj.label,
-    },
-    pipelineStatus: 'READY_FOR_GEMINI_INTEGRATION',
+      navigate('/analysis', {
+        state: {
+          file: file
+            ? {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                sizeFormatted: formatFileSize(file.size),
+              }
+            : null,
+          persona,
+          customPersona,
+          language,
+        },
+      });
+    }, 400);
   };
 
   return (
@@ -208,95 +203,9 @@ export default function ReviewStep({
         </button>
 
         <p className="mt-3 text-xs text-zinc-500 text-center font-mono">
-          Ready for milestone pipeline dispatch • No remote transmission in this phase
+          Ready for analysis • Transitions to LegalLens AI Dashboard
         </p>
       </div>
-
-      {/* Clearly Marked "AI Integration Scheduled for Next Milestone" Dialog Modal */}
-      {showMilestoneModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-xl rounded-3xl bg-[#0c0e12] border border-indigo-500/40 p-6 sm:p-8 shadow-[0_0_60px_-10px_rgba(99,102,241,0.4)] text-left space-y-6">
-            
-            {/* Header Badge */}
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-semibold text-indigo-300">
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                Next Milestone Ready
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowMilestoneModal(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors cursor-pointer"
-                aria-label="Close dialog"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Title & Description */}
-            <div className="space-y-2">
-              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Document Upload & Profile Configured
-              </h3>
-              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                The document upload workflow is complete! The document parameters, user persona, and target language have been validated in React state and structured for the upcoming AI processing milestone.
-              </p>
-            </div>
-
-            {/* Structured Conceptual Payload Box */}
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-2">
-              <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider flex items-center justify-between">
-                <span>Client-Side Analysis Package</span>
-                <span className="text-emerald-400 font-semibold">100% Prepared</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/50">
-                  <span className="text-zinc-500 block text-[10px]">Document:</span>
-                  <span className="text-zinc-200 truncate block">{analysisPayloadSummary.document.name}</span>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/50">
-                  <span className="text-zinc-500 block text-[10px]">Size:</span>
-                  <span className="text-zinc-200 block">{analysisPayloadSummary.document.sizeFormatted}</span>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/50">
-                  <span className="text-zinc-500 block text-[10px]">Persona:</span>
-                  <span className="text-indigo-300 block truncate">{analysisPayloadSummary.perspective.role}</span>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/50">
-                  <span className="text-zinc-500 block text-[10px]">Language:</span>
-                  <span className="text-sky-300 block">{analysisPayloadSummary.outputLanguage.name} ({analysisPayloadSummary.outputLanguage.code})</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Milestone Roadmap Callout */}
-            <div className="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-200/90 leading-relaxed">
-              <strong>Upcoming Milestone:</strong> LegalLens will connect the Express backend and Google Gemini API to perform clause-by-clause extraction, liability scoring, and plain-language briefings.
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={onResetWorkflow}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/60 transition-colors cursor-pointer"
-              >
-                Upload Another Document
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowMilestoneModal(false)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
-              >
-                Dismiss Notice
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
     </div>
   );
 }

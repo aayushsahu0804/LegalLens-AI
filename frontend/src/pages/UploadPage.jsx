@@ -68,17 +68,6 @@ export default function UploadPage({ currentLanguage, onLanguageChange }) {
     }
   };
 
-  const handleResetWorkflow = () => {
-    setFile(null);
-    setFileError(null);
-    setPersona('student');
-    setCustomPersona('');
-    setSelectedLanguage(currentLanguage || 'en');
-    setCurrentStep(1);
-    setMaxReachedStep(1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   // Step validation rules for Next button
   const isStepValid = () => {
     switch (currentStep) {
@@ -168,7 +157,6 @@ export default function UploadPage({ currentLanguage, onLanguageChange }) {
               customPersona={customPersona}
               language={selectedLanguage}
               onGoToStep={handleDirectStepJump}
-              onResetWorkflow={handleResetWorkflow}
             />
           )}
 

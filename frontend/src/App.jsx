@@ -5,15 +5,13 @@ import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 
+import UploadPage from './pages/UploadPage';
+
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
   const handleLanguageChange = (langCode) => {
     setCurrentLanguage(langCode);
-  };
-
-  const handleUploadClick = () => {
-    console.log('Upload Document CTA triggered. Ready for document upload milestone.');
   };
 
   return (
@@ -23,17 +21,24 @@ function App() {
         <Navbar
           currentLanguage={currentLanguage}
           onLanguageChange={handleLanguageChange}
-          onUploadClick={handleUploadClick}
         />
 
         {/* Main Routed Content */}
         <main className="flex-1 flex flex-col">
           <Routes>
-            <Route path="/" element={<LandingPage onUploadClick={handleUploadClick} />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/subscriptions" element={<SubscriptionsPage />} />
+            <Route
+              path="/upload"
+              element={
+                <UploadPage
+                  currentLanguage={currentLanguage}
+                  onLanguageChange={handleLanguageChange}
+                />
+              }
+            />
             
             {/* Future Route Placeholders */}
-            <Route path="/upload" element={<Navigate to="/" replace />} />
             <Route path="/analysis" element={<Navigate to="/" replace />} />
             <Route path="/chat" element={<Navigate to="/" replace />} />
             <Route path="/compare" element={<Navigate to="/" replace />} />

@@ -1,11 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import TrustIndicators from './TrustIndicators';
 
 export default function Hero({ onUploadClick }) {
+  const navigate = useNavigate();
+
   const handleUploadClick = (e) => {
     e.preventDefault();
     if (onUploadClick) {
       onUploadClick();
+    } else {
+      navigate('/upload');
     }
   };
 

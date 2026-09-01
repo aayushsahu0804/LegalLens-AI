@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LanguageSelector from './LanguageSelector';
 
 export default function Navbar({ currentLanguage, onLanguageChange, onUploadClick }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isSubscriptionsPage = location.pathname === '/subscriptions';
 
@@ -33,6 +34,8 @@ export default function Navbar({ currentLanguage, onLanguageChange, onUploadClic
     setMobileMenuOpen(false);
     if (onUploadClick) {
       onUploadClick();
+    } else {
+      navigate('/upload');
     }
   };
 
